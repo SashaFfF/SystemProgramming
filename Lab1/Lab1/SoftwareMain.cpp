@@ -1,11 +1,14 @@
 #include <Windows.h>
 #include <string>
+#include "resource.h"
 #include "SoftwareDefinitions.h"
 
-//точка входа в наше приложение
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
-	WNDCLASS SoftwareMainClass = NewWindowClass((HBRUSH)COLOR_WINDOW, LoadCursor(NULL, IDC_ARROW), hInst, LoadIcon(NULL,IDI_QUESTION), L"MainWndClass", SoftwareMainProcedure);
 
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
+	HBRUSH backgroundColor = CreateSolidBrush(RGB(204, 255, 204));
+	WNDCLASS SoftwareMainClass = NewWindowClass(backgroundColor, LoadCursor(NULL, IDC_ARROW),
+												hInst, LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1)), L"MainWndClass", SoftwareMainProcedure);
+	CreateSolidBrush(RGB(0, 0, 255));
 	if (!RegisterClassW(&SoftwareMainClass)) {
 		return -1;
 	}
@@ -32,6 +35,11 @@ WNDCLASS NewWindowClass(HBRUSH BdColor, HCURSOR Cursor, HINSTANCE hInst, HICON I
 	return WindowClass;
 }
 
+//CALlLBACK - спецификатор для функции обратного вызова, т.е. функции, которую вызывает сама операционная система
+//hWnd - дескриптор окна, которому адресовано сообщение 
+//msg - код сообщения
+//wp, lp - параметры сообщения
+//WndProc - для главного окна приложения 
 LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	switch (msg)
 	{
@@ -89,17 +97,14 @@ void AddMenu(HWND hWnd) {
 
 
 	AppendMenu(RootMenu, MF_POPUP, (UINT_PTR)SubMenu, L"File");
-	AppendMenu(RootMenu, MF_STRING, (UINT_PTR)SubMenu, L"Help");
 
-	//hwnd- окно, на которое устанавливается меню
 	SetMenu(hWnd, RootMenu);
 }
 
 void AddWidgets(HWND hWnd) {
-	hStaticControl = CreateWindowA("static", "Hello:) ", WS_VISIBLE | WS_CHILD | ES_CENTER, 5, 5, 490, 20, hWnd, NULL, NULL, NULL);
-	hEditControl = CreateWindowA("edit", "Edit control", ES_MULTILINE| WS_VSCROLL | WS_VISIBLE | WS_CHILD , 5, 30, 780, 200, hWnd, NULL, NULL, NULL);
-	CreateWindowA("button", "Clear", WS_VISIBLE | WS_CHILD , 5, 240, 120, 30, hWnd, (HMENU)OnButtonClicked, NULL, NULL);
-	CreateWindowA("button", "Read", WS_VISIBLE | WS_CHILD, 140, 240, 120, 30, hWnd, (HMENU)OnReadField, NULL, NULL);
+	hStaticControl = CreateWindowA("static", "Enter text", WS_VISIBLE | WS_CHILD| ES_CENTER, 5, 5, 780, 20, hWnd, NULL, NULL, NULL);
+	hEditControl = CreateWindowA("edit", "", ES_MULTILINE | WS_VSCROLL | WS_VISIBLE | WS_CHILD, 5, 30, 780, 250, hWnd, NULL, NULL, NULL);
+	CreateWindowA("button", "Clear", WS_VISIBLE | WS_CHILD, 5, 300, 120, 30, hWnd, (HMENU)OnButtonClicked, NULL, NULL);
 }
 
 void SaveData(LPCSTR path) {
@@ -115,7 +120,7 @@ void SaveData(LPCSTR path) {
 
 void LoadData(LPCSTR path) {
 	HANDLE file = CreateFileA(path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	DWORD bytesIterated; //кол-во считанных символов
+	DWORD bytesIterated; 
 
 	ReadFile(file, Buffer, TextBufferSize, &bytesIterated, NULL);
 	SetWindowTextA(hEditControl, Buffer);

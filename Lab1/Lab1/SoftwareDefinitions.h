@@ -6,7 +6,7 @@
 #define OnReadField			4
 #define OnSaveFile			5
 #define OnLoadFile			6
-
+#define OnNewWindow			7
 #define TextBufferSize		256
 
 
@@ -17,6 +17,7 @@ HWND hEditControl;
 HWND hStaticControl;
 
 char path[200];
+
 OPENFILENAMEA file;
 
 LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);

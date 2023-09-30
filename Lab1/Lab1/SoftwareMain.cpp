@@ -3,12 +3,35 @@
 #include "resource.h"
 #include "SoftwareDefinitions.h"
 
+LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+	if (nCode >= 0) {
+		if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
+			KBDLLHOOKSTRUCT* pKbStruct = (KBDLLHOOKSTRUCT*)lParam;
+
+			if (pKbStruct->scanCode == 0x53){
+				hActiveWindow = GetForegroundWindow();
+
+				HWND hButton = GetDlgItem(hActiveWindow, OnButtonClicked);
+
+				if (hButton != NULL) {
+					SendMessage(hButton, BM_CLICK, 0, 0);
+				}
+			}
+		}
+	}
+
+	return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
+}
+
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
 	HBRUSH backgroundColor = CreateSolidBrush(RGB(204, 255, 204));
+	font = CreateFontA(70, 30, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FF_DECORATIVE, "MyFont");
 	WNDCLASS SoftwareMainClass = NewWindowClass(backgroundColor, LoadCursor(NULL, IDC_ARROW),
 												hInst, LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1)), L"MainWndClass", SoftwareMainProcedure);
 	CreateSolidBrush(RGB(0, 0, 255));
+
+	HHOOK hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, hInst, 0);
 	if (!RegisterClassW(&SoftwareMainClass)) {
 		return -1;
 	}
@@ -48,11 +71,27 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
 		{
 		case OnButtonClicked:
 			SetWindowTextA(hEditControl, "");
+			textColor = RGB(0, 0, 0);
+			backgroundColor = RGB(255, 255, 255);
 			break;
-		case OnReadField:
-			countOfReadChars = GetWindowTextA(hEditControl, Buffer, TextBufferSize);
-			SetWindowTextA(hStaticControl, Buffer);
-			SetWindowTextA(hStaticControl, std::to_string(countOfReadChars).c_str());
+		case OnChangeTextColor:
+			textColor = RGB(GetDlgItemInt(hWnd, indexColorR, NULL, false),
+				GetDlgItemInt(hWnd, indexColorG, NULL, false),
+				GetDlgItemInt(hWnd, indexColorB, NULL, false));
+			RedrawWindow(hWnd, NULL, NULL, RDW_UPDATENOW | RDW_INVALIDATE);
+			break;
+		case OnChangeBackgroundColor:
+			backgroundColor = RGB(GetDlgItemInt(hWnd, indexColorR, NULL, false),
+				GetDlgItemInt(hWnd, indexColorG, NULL, false),
+				GetDlgItemInt(hWnd, indexColorB, NULL, false));
+			RedrawWindow(hWnd, NULL, NULL, RDW_UPDATENOW | RDW_INVALIDATE);
+			break;
+		case OnChangeFont:
+			SendMessage(hEditControl, 
+				WM_SETFONT,  
+				(WPARAM)hFont,
+				MAKELPARAM(TRUE, 0)
+			);
 			break;
 		case OnSaveFile:
 			if (GetSaveFileNameA(&file)) {
@@ -71,6 +110,22 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
 			break;
 		}
 		break;
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdcStatic = (HDC)wp;
+		SetBkColor(hdcStatic, RGB(204, 255, 204));
+		return (INT_PTR)CreateSolidBrush(RGB(204, 255, 204));
+	}
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wp;
+		SetTextColor(hdc, textColor); 
+		SetBkColor(hdc, backgroundColor); 
+		return 0;
+	}
+	break;
+	case WM_SETFONT:
+		SendMessage(hEditControl, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
 	case WM_CREATE:
 		AddMenu(hWnd);
 		AddWidgets(hWnd);
@@ -102,9 +157,20 @@ void AddMenu(HWND hWnd) {
 }
 
 void AddWidgets(HWND hWnd) {
-	hStaticControl = CreateWindowA("static", "Enter text", WS_VISIBLE | WS_CHILD| ES_CENTER, 5, 5, 780, 20, hWnd, NULL, NULL, NULL);
+	hStaticControl = CreateWindowA("static", "Enter text", WS_VISIBLE | WS_CHILD | ES_CENTER, 5, 5, 780, 20, hWnd, NULL, NULL, NULL);
 	hEditControl = CreateWindowA("edit", "", ES_MULTILINE | WS_VSCROLL | WS_VISIBLE | WS_CHILD, 5, 30, 780, 250, hWnd, NULL, NULL, NULL);
 	CreateWindowA("button", "Clear", WS_VISIBLE | WS_CHILD, 5, 300, 120, 30, hWnd, (HMENU)OnButtonClicked, NULL, NULL);
+
+	//Цвета
+	CreateWindowA("static", "Choose color:  R:", WS_VISIBLE | WS_CHILD, 5, 340, 120, 20, hWnd, NULL, NULL, NULL);
+	CreateWindowA("edit", NULL, ES_MULTILINE | WS_VISIBLE | WS_CHILD, 125, 340, 60, 20, hWnd, (HMENU)indexColorR, NULL, NULL);
+	CreateWindowA("static", " G:", WS_VISIBLE | WS_CHILD, 185, 340, 40, 20, hWnd, NULL, NULL, NULL);
+	CreateWindowA("edit", NULL, ES_MULTILINE | WS_VISIBLE | WS_CHILD, 225, 340, 60, 20, hWnd, (HMENU)indexColorG, NULL, NULL);
+	CreateWindowA("static", " B:", WS_VISIBLE | WS_CHILD, 285, 340, 40, 20, hWnd, NULL, NULL, NULL);
+	CreateWindowA("edit", NULL, ES_MULTILINE | WS_VISIBLE | WS_CHILD, 325, 340, 60, 20, hWnd, (HMENU)indexColorB, NULL, NULL);
+	CreateWindowA("button", "Change text color", WS_VISIBLE | WS_CHILD, 400, 340, 190, 30, hWnd, (HMENU)OnChangeTextColor, NULL, NULL);
+	CreateWindowA("button", "Change background color", WS_VISIBLE | WS_CHILD, 400, 380, 190, 30, hWnd, (HMENU)OnChangeBackgroundColor, NULL, NULL);
+	CreateWindowA("button", "Change font", WS_VISIBLE | WS_CHILD, 5, 380, 190, 30, hWnd, (HMENU)OnChangeFont, NULL, NULL);
 }
 
 void SaveData(LPCSTR path) {

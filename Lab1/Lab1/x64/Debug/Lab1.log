@@ -1,0 +1,5 @@
+﻿  SoftwareMain.cpp
+D:\5 sem\SystemProgramming\Lab1\Lab1\SoftwareMain.cpp(16,2): error C2664: "HWND CreateWindowExW(DWORD,LPCWSTR,LPCWSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)": невозможно преобразовать аргумент 2 из "const char [13]" в "LPCWSTR"
+D:\5 sem\SystemProgramming\Lab1\Lab1\SoftwareMain.cpp(16,2): message : Типы, на которые указывают указатели, не связаны; для преобразования требуется reinterpret_cast, приведение в стиле С или приведение в стиле функции в круглых скобках
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\winuser.h(4433,1): message : см. объявление "CreateWindowExW"
+D:\5 sem\SystemProgramming\Lab1\Lab1\SoftwareMain.cpp(16,2): message : при попытке сопоставить список аргументов "(long, const char [13], const wchar_t [17], long, int, int, int, int, int, int, int, int)"

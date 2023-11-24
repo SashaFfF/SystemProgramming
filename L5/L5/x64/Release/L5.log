@@ -1,0 +1,10 @@
+﻿  Source.cpp
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(23,14): warning C4101: backgroundColor: неиспользованная локальная переменная
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(114,86): warning C4311: приведение типов: усечение указателя из "HBRUSH" в "LONG"
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(114,86): warning C4302: приведение типов: усечение из "HBRUSH" к "LONG"
+  Создание кода
+  1 of 11 functions ( 9.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  L5.vcxproj -> D:\5 sem\SystemProgramming\L5\x64\Release\L5.exe

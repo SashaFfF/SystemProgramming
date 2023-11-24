@@ -1,0 +1,7 @@
+﻿  Source.cpp
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(23,14): warning C4101: backgroundColor: неиспользованная локальная переменная
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(114,86): warning C4311: приведение типов: усечение указателя из "HBRUSH" в "LONG"
+D:\5 sem\SystemProgramming\L5\L5\Source.cpp(114,86): warning C4302: приведение типов: усечение из "HBRUSH" к "LONG"
+MSVCRTD.lib(exe_main.obj) : error LNK2019: ссылка на неразрешенный внешний символ main в функции "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ).
+D:\5 sem\SystemProgramming\L5\x64\Debug\L5.exe : fatal error LNK1120: неразрешенных внешних элементов: 1
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(1096,5): error MSB6006: "link.exe" завершилась с кодом 1120.

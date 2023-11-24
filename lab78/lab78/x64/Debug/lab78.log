@@ -1,0 +1,2 @@
+﻿Server.obj : error LNK2005: main уже определен в Client.obj
+D:\5 sem\SystemProgramming\lab78\x64\Debug\lab78.exe : fatal error LNK1169: обнаружен многократно определенный символ - один или более
